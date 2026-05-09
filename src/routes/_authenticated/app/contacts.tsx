@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Trash2, Pencil } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
@@ -18,15 +19,27 @@ import {
 } from "@/components/ui/table";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/app/contacts")({
   component: ContactsPage,
 });
 
+type ContactStatus = "new" | "lead" | "customer" | "spam" | "archived";
+const STATUSES: ContactStatus[] = ["new", "lead", "customer", "spam", "archived"];
+
+const STATUS_STYLES: Record<ContactStatus, string> = {
+  new: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
+  lead: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
+  customer: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
+  spam: "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20",
+  archived: "bg-muted text-muted-foreground border-border",
+};
+
 type Contact = {
   id: string; first_name: string; last_name: string | null; email: string | null;
   phone: string | null; title: string | null; source: string | null; notes: string | null;
-  company_id: string | null;
+  company_id: string | null; status: ContactStatus;
 };
 
 function ContactsPage() {
@@ -34,6 +47,7 @@ function ContactsPage() {
   const { user } = useAuth();
   const [editing, setEditing] = useState<Partial<Contact> | null>(null);
   const [open, setOpen] = useState(false);
+  const [filter, setFilter] = useState<ContactStatus | "all">("all");
 
   const { data: contacts = [] } = useQuery({
     queryKey: ["contacts"],
@@ -55,6 +69,7 @@ function ContactsPage() {
         first_name: c.first_name!, last_name: c.last_name ?? null, email: c.email ?? null,
         phone: c.phone ?? null, title: c.title ?? null, source: c.source ?? null,
         notes: c.notes ?? null, company_id: c.company_id || null,
+        status: (c.status ?? "new") as ContactStatus,
       };
       if (c.id) {
         const { error } = await supabase.from("contacts").update(payload).eq("id", c.id);
@@ -65,6 +80,15 @@ function ContactsPage() {
       }
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["contacts"] }); setOpen(false); toast.success("Saved"); },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const updateStatus = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: ContactStatus }) => {
+      const { error } = await supabase.from("contacts").update({ status }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["contacts"] }),
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -79,6 +103,15 @@ function ContactsPage() {
 
   const companyName = (id: string | null) => companies.find((c) => c.id === id)?.name ?? "—";
 
+  const counts = useMemo(() => {
+    const m: Record<string, number> = { all: contacts.length };
+    for (const s of STATUSES) m[s] = 0;
+    for (const c of contacts) m[c.status] = (m[c.status] ?? 0) + 1;
+    return m;
+  }, [contacts]);
+
+  const filtered = filter === "all" ? contacts : contacts.filter((c) => c.status === filter);
+
   return (
     <div className="mx-auto max-w-6xl p-6">
       <div className="mb-6 flex items-center justify-between">
@@ -88,10 +121,24 @@ function ContactsPage() {
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setEditing({})}><Plus className="mr-1.5 h-4 w-4" /> New contact</Button>
+            <Button onClick={() => setEditing({ status: "new" })}><Plus className="mr-1.5 h-4 w-4" /> New contact</Button>
           </DialogTrigger>
           <ContactDialog value={editing ?? {}} onChange={setEditing} companies={companies} onSave={() => save.mutate(editing!)} />
         </Dialog>
+      </div>
+
+      <div className="mb-4 flex flex-wrap gap-2">
+        <StatusChip label="All" active={filter === "all"} count={counts.all} onClick={() => setFilter("all")} />
+        {STATUSES.map((s) => (
+          <StatusChip
+            key={s}
+            label={s}
+            active={filter === s}
+            count={counts[s] ?? 0}
+            className={STATUS_STYLES[s]}
+            onClick={() => setFilter(s)}
+          />
+        ))}
       </div>
 
       <div className="rounded-xl border bg-card">
@@ -99,6 +146,7 @@ function ContactsPage() {
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead>Title</TableHead>
               <TableHead>Company</TableHead>
               <TableHead>Email</TableHead>
@@ -107,12 +155,22 @@ function ContactsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {contacts.length === 0 && (
-              <TableRow><TableCell colSpan={6} className="text-center text-sm text-muted-foreground py-8">No contacts yet.</TableCell></TableRow>
+            {filtered.length === 0 && (
+              <TableRow><TableCell colSpan={7} className="text-center text-sm text-muted-foreground py-8">No contacts.</TableCell></TableRow>
             )}
-            {contacts.map((c) => (
+            {filtered.map((c) => (
               <TableRow key={c.id}>
                 <TableCell className="font-medium">{c.first_name} {c.last_name}</TableCell>
+                <TableCell>
+                  <Select value={c.status} onValueChange={(v) => updateStatus.mutate({ id: c.id, status: v as ContactStatus })}>
+                    <SelectTrigger className={cn("h-7 w-[130px] border text-xs font-medium uppercase tracking-wide", STATUS_STYLES[c.status])}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {STATUSES.map((s) => <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </TableCell>
                 <TableCell>{c.title ?? "—"}</TableCell>
                 <TableCell>{companyName(c.company_id)}</TableCell>
                 <TableCell>{c.email ?? "—"}</TableCell>
@@ -129,6 +187,25 @@ function ContactsPage() {
         </Table>
       </div>
     </div>
+  );
+}
+
+function StatusChip({
+  label, active, count, className, onClick,
+}: { label: string; active: boolean; count: number; className?: string; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium uppercase tracking-wide transition-all",
+        active ? "ring-2 ring-ring ring-offset-2 ring-offset-background" : "opacity-70 hover:opacity-100",
+        className ?? "bg-card text-foreground border-border",
+      )}
+    >
+      <span>{label}</span>
+      <Badge variant="secondary" className="h-4 px-1.5 text-[10px]">{count}</Badge>
+    </button>
   );
 }
 
@@ -166,7 +243,18 @@ function ContactDialog({
             </Select>
           </div>
         </div>
-        <div className="space-y-1.5"><Label>Source</Label><Input placeholder="Referral, website…" value={value.source ?? ""} onChange={(e) => set("source", e.target.value)} /></div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label>Status</Label>
+            <Select value={value.status ?? "new"} onValueChange={(v) => set("status", v as ContactStatus)}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {STATUSES.map((s) => <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5"><Label>Source</Label><Input placeholder="Referral, website…" value={value.source ?? ""} onChange={(e) => set("source", e.target.value)} /></div>
+        </div>
         <div className="space-y-1.5"><Label>Notes</Label><Textarea rows={3} value={value.notes ?? ""} onChange={(e) => set("notes", e.target.value)} /></div>
       </div>
       <DialogFooter><Button onClick={onSave} disabled={!value.first_name}>Save</Button></DialogFooter>
