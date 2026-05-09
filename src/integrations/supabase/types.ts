@@ -62,6 +62,7 @@ export type Database = {
           notes: string | null
           phone: string | null
           source: string | null
+          status: Database["public"]["Enums"]["contact_status"]
           tags: string[] | null
           title: string | null
           updated_at: string
@@ -77,6 +78,7 @@ export type Database = {
           notes?: string | null
           phone?: string | null
           source?: string | null
+          status?: Database["public"]["Enums"]["contact_status"]
           tags?: string[] | null
           title?: string | null
           updated_at?: string
@@ -92,6 +94,7 @@ export type Database = {
           notes?: string | null
           phone?: string | null
           source?: string | null
+          status?: Database["public"]["Enums"]["contact_status"]
           tags?: string[] | null
           title?: string | null
           updated_at?: string
@@ -229,6 +232,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "member"
+      contact_status: "new" | "lead" | "customer" | "spam" | "archived"
       deal_stage:
         | "lead"
         | "qualified"
@@ -371,6 +375,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "member"],
+      contact_status: ["new", "lead", "customer", "spam", "archived"],
       deal_stage: [
         "lead",
         "qualified",
