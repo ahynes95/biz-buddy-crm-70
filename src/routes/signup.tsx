@@ -44,7 +44,7 @@ function SignupPage() {
           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
             <Sparkles className="h-4 w-4" />
           </div>
-          <span className="font-semibold">Pixel CRM</span>
+          <span className="font-semibold">FusionHub</span>
         </Link>
         <div className="rounded-xl border bg-card p-6 shadow-sm">
           <h1 className="text-xl font-semibold">Create your workspace</h1>
