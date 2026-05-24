@@ -24,7 +24,7 @@ function Landing() {
           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
             <Sparkles className="h-4 w-4" />
           </div>
-          <span className="font-semibold">FusionHub</span>
+          <span className="font-semibold">FusionStack</span>
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />
