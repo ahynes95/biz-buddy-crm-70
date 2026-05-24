@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { ArrowRight, Sparkles, Users, Briefcase, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -28,8 +28,7 @@ function Landing() {
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <Button variant="ghost" asChild><Link to="/login">Sign in</Link></Button>
-          <Button asChild><Link to="/signup">Get started</Link></Button>
+          <Button disabled>Get started</Button>
         </div>
       </header>
 
@@ -46,11 +45,8 @@ function Landing() {
             Track leads, manage your pipeline, and turn proposals into projects — without the bloat.
           </p>
           <div className="mt-8 flex justify-center gap-3">
-            <Button size="lg" asChild>
-              <Link to="/signup">Start free <ArrowRight className="ml-1.5 h-4 w-4" /></Link>
-            </Button>
-            <Button size="lg" variant="outline" asChild>
-              <Link to="/login">Sign in</Link>
+            <Button size="lg" disabled>
+              Coming Soon <ArrowRight className="ml-1.5 h-4 w-4" />
             </Button>
           </div>
         </section>
