@@ -4,4 +4,8 @@
   "compatibility_date": "2025-09-24",
   "compatibility_flags": ["nodejs_compat"],
   "main": "src/server.ts",
+  "routes": [
+    { "pattern": "fusionstack.net/*", "zone_name": "fusionstack.net" },
+    { "pattern": "www.fusionstack.net/*", "zone_name": "fusionstack.net" }
+  ],
 }
