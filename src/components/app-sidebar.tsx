@@ -43,7 +43,7 @@ export function AppSidebar() {
       <SidebarHeader>
         <Link to="/app" className="flex items-center px-2 py-2">
           <img
-            src="https://hdempuicehrxbjwlddpk.supabase.co/storage/v1/object/public/assets/Copy%20of%20FusionStack.png"
+            src="https://hdempuicehrxbjwlddpk.supabase.co/storage/v1/object/public/assets/FusionStack-transparent_2.png"
             alt="FusionStack"
             className="group-data-[collapsible=icon]:hidden"
             style={{ height: 52, width: "auto" }}
