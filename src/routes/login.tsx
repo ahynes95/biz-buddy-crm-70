@@ -33,7 +33,7 @@ function LoginPage() {
       <div className="absolute right-4 top-4"><ThemeToggle /></div>
       <div className="w-full max-w-sm">
         <Link to="/" className="mb-8 flex items-center justify-center">
-          <img src="/fusionstack-logo.png" alt="FusionStack" style={{ height: 60, width: "auto" }} />
+          <img src="https://hdempuicehrxbjwlddpk.supabase.co/storage/v1/object/public/assets/Copy%20of%20FusionStack.png" alt="FusionStack" style={{ height: 60, width: "auto" }} />
         </Link>
         <div className="rounded-xl border bg-card p-6 shadow-sm">
           <h1 className="text-xl font-semibold">Welcome back</h1>

@@ -45,7 +45,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <Link to="/app" className="flex items-center px-2 py-2">
-          <img src="/fusionstack-logo.png" alt="FusionStack" style={{ height: 40, width: "auto" }} />
+          <img src="https://hdempuicehrxbjwlddpk.supabase.co/storage/v1/object/public/assets/Copy%20of%20FusionStack.png" alt="FusionStack" style={{ height: 40, width: "auto" }} />
         </Link>
       </SidebarHeader>
       <SidebarContent>

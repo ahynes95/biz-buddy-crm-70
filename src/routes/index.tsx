@@ -21,7 +21,7 @@ function Landing() {
     <div className="min-h-screen bg-background text-foreground">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
         <div className="flex items-center">
-          <img src="/fusionstack-logo.png" alt="FusionStack" style={{ height: 40, width: "auto" }} />
+          <img src="https://hdempuicehrxbjwlddpk.supabase.co/storage/v1/object/public/assets/Copy%20of%20FusionStack.png" alt="FusionStack" style={{ height: 40, width: "auto" }} />
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />
