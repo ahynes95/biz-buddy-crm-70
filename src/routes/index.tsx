@@ -20,7 +20,7 @@ function Landing() {
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
         <div className="flex items-center">
           <img
-            src="https://hdempuicehrxbjwlddpk.supabase.co/storage/v1/object/public/assets/Copy%20of%20FusionStack.png"
+            src="https://hdempuicehrxbjwlddpk.supabase.co/storage/v1/object/public/assets/FusionStack-transparent_2.png"
             alt="FusionStack"
             style={{ height: 200, width: "auto" }}
           />
