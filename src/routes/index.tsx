@@ -4,7 +4,7 @@ import { ArrowRight, Users, Briefcase, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuth } from "@/hooks/use-auth";
-import { FusionStackLogo, FusionStackLogoHorizontal } from "@/components/FusionStackLogo";
+import { FusionStackLogo } from "@/components/FusionStackLogo";
 
 export const Route = createFileRoute("/")({
   component: Landing,
@@ -19,7 +19,7 @@ function Landing() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-        <FusionStackLogoHorizontal />
+        <FusionStackLogo size="md" />
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <Button disabled>Get started</Button>
