@@ -12,23 +12,24 @@ export const Route = createFileRoute("/")({
 function Landing() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
-
   useEffect(() => {
     if (!loading && user) navigate({ to: "/app" });
   }, [user, loading, navigate]);
-
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
         <div className="flex items-center">
-          <img src="https://hdempuicehrxbjwlddpk.supabase.co/storage/v1/object/public/assets/Copy%20of%20FusionStack.png" alt="FusionStack" style={{ height: 40, width: "auto" }} />
+          <img
+            src="https://hdempuicehrxbjwlddpk.supabase.co/storage/v1/object/public/assets/Copy%20of%20FusionStack.png"
+            alt="FusionStack"
+            style={{ height: 64, width: "auto" }}
+          />
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <Button disabled>Get started</Button>
         </div>
       </header>
-
       <main className="mx-auto max-w-6xl px-6 pt-16 pb-24">
         <section className="mx-auto max-w-3xl text-center">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border bg-card px-3 py-1 text-xs text-muted-foreground">
@@ -47,7 +48,6 @@ function Landing() {
             </Button>
           </div>
         </section>
-
         <section className="mt-24 grid gap-6 sm:grid-cols-3">
           {[
             { icon: Users, title: "Contacts & Companies", desc: "Centralize every client, prospect, and partner." },
