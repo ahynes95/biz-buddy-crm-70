@@ -5,7 +5,6 @@ import {
   Building2,
   Briefcase,
   LogOut,
-  Sparkles,
 } from "lucide-react";
 import {
   Sidebar,
@@ -45,11 +44,8 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <Link to="/app" className="flex items-center gap-2 px-2 py-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <Sparkles className="h-4 w-4" />
-          </div>
-          <span className="font-semibold text-sm">FusionStack</span>
+        <Link to="/app" className="flex items-center px-2 py-2">
+          <img src="/fusionstack-logo.png" alt="FusionStack" style={{ height: 40, width: "auto" }} />
         </Link>
       </SidebarHeader>
       <SidebarContent>

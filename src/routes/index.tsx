@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { ArrowRight, Sparkles, Users, Briefcase, LayoutDashboard } from "lucide-react";
+import { ArrowRight, Users, Briefcase, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuth } from "@/hooks/use-auth";
@@ -20,11 +20,8 @@ function Landing() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-        <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <Sparkles className="h-4 w-4" />
-          </div>
-          <span className="font-semibold">FusionStack</span>
+        <div className="flex items-center">
+          <img src="/fusionstack-logo.png" alt="FusionStack" style={{ height: 40, width: "auto" }} />
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />
