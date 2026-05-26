@@ -22,7 +22,7 @@ function Landing() {
           <img
             src="https://hdempuicehrxbjwlddpk.supabase.co/storage/v1/object/public/assets/Copy%20of%20FusionStack.png"
             alt="FusionStack"
-            style={{ height: 64, width: "auto" }}
+            style={{ height: 200, width: "auto" }}
           />
         </div>
         <div className="flex items-center gap-2">
