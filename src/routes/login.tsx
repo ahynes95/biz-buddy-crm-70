@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { FusionStackLogo } from "@/components/FusionStackLogo";
 
 export const Route = createFileRoute("/login")({ component: LoginPage });
 
@@ -16,9 +17,7 @@ function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-
   useEffect(() => { if (user) navigate({ to: "/app" }); }, [user, navigate]);
-
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -27,13 +26,12 @@ function LoginPage() {
     if (error) toast.error(error.message);
     else navigate({ to: "/app" });
   };
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="absolute right-4 top-4"><ThemeToggle /></div>
       <div className="w-full max-w-sm">
         <Link to="/" className="mb-8 flex items-center justify-center">
-          <img src="https://hdempuicehrxbjwlddpk.supabase.co/storage/v1/object/public/assets/Copy%20of%20FusionStack.png" alt="FusionStack" style={{ height: 60, width: "auto" }} />
+          <FusionStackLogo size="md" />
         </Link>
         <div className="rounded-xl border bg-card p-6 shadow-sm">
           <h1 className="text-xl font-semibold">Welcome back</h1>
