@@ -32,20 +32,22 @@ export function AppSidebar() {
   const path = useRouterState({ select: (r) => r.location.pathname });
   const navigate = useNavigate();
   const { user } = useAuth();
-
   const isActive = (url: string, exact?: boolean) =>
     exact ? path === url : path === url || path.startsWith(url + "/");
-
   const signOut = async () => {
     await supabase.auth.signOut();
     navigate({ to: "/login" });
   };
-
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <Link to="/app" className="flex items-center px-2 py-2">
-          <img src="https://hdempuicehrxbjwlddpk.supabase.co/storage/v1/object/public/assets/Copy%20of%20FusionStack.png" alt="FusionStack" style={{ height: 40, width: "auto" }} />
+          <img
+            src="https://hdempuicehrxbjwlddpk.supabase.co/storage/v1/object/public/assets/Copy%20of%20FusionStack.png"
+            alt="FusionStack"
+            className="group-data-[collapsible=icon]:hidden"
+            style={{ height: 52, width: "auto" }}
+          />
         </Link>
       </SidebarHeader>
       <SidebarContent>
