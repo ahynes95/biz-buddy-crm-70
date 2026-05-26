@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/sidebar";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { FusionStackLogoHorizontal } from "@/components/FusionStackLogo";
 
 const items = [
   { title: "Dashboard", url: "/app", icon: LayoutDashboard, exact: true },
@@ -42,11 +43,14 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <Link to="/app" className="flex items-center px-2 py-2">
+          <div className="group-data-[collapsible=icon]:hidden">
+            <FusionStackLogoHorizontal />
+          </div>
           <img
             src="https://hdempuicehrxbjwlddpk.supabase.co/storage/v1/object/public/assets/FusionStack-transparent_2.png"
             alt="FusionStack"
-            className="group-data-[collapsible=icon]:hidden"
-            style={{ height: 52, width: "auto" }}
+            className="hidden group-data-[collapsible=icon]:block"
+            style={{ height: 32, width: "auto" }}
           />
         </Link>
       </SidebarHeader>
