@@ -1,21 +1,108 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
-import { ArrowRight, Users, Briefcase, LayoutDashboard } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowRight, Users, Briefcase, LayoutDashboard, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuth } from "@/hooks/use-auth";
 import { FusionStackLogo } from "@/components/FusionStackLogo";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/")({ component: Landing });
+
+function QuoteModal({ onClose }: { onClose: () => void }) {
+  const [form, setForm] = useState({ name: "", email: "", business: "", need: "" });
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await fetch("/api/quote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) throw new Error("Failed");
+      setSubmitted(true);
+    } catch {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+      <div className="relative w-full max-w-md rounded-2xl border bg-card p-6 shadow-xl">
+        <button onClick={onClose} className="absolute right-4 top-4 text-muted-foreground hover:text-foreground">
+          <X className="h-5 w-5" />
+        </button>
+        {submitted ? (
+          <div className="py-8 text-center">
+            <div className="text-4xl mb-4">🎉</div>
+            <h2 className="text-xl font-semibold">We'll be in touch!</h2>
+            <p className="mt-2 text-sm text-muted-foreground">Thanks {form.name}, check your inbox for a confirmation.</p>
+            <Button className="mt-6" onClick={onClose}>Close</Button>
+          </div>
+        ) : (
+          <>
+            <h2 className="text-xl font-semibold">Get a free quote</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Tell us about your project and we'll get back to you within 24 hours.</p>
+            <form onSubmit={handleSubmit} className="mt-5 space-y-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="name">Your name</Label>
+                <Input id="name" required value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" type="email" required value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="business">Business name</Label>
+                <Input id="business" required value={form.business} onChange={e => setForm(f => ({ ...f, business: e.target.value }))} />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="need">What do you need?</Label>
+                <select
+                  id="need"
+                  required
+                  value={form.need}
+                  onChange={e => setForm(f => ({ ...f, need: e.target.value }))}
+                  className="w-full rounded-md border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <option value="">Select an option...</option>
+                  <option value="New website">New website</option>
+                  <option value="Redesign">Redesign</option>
+                  <option value="Landing page">Landing page</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Sending..." : "Submit request"}
+              </Button>
+            </form>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
 
 function Landing() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+
   useEffect(() => {
     if (!loading && user) navigate({ to: "/app" });
   }, [user, loading, navigate]);
+
   return (
     <div className="min-h-screen bg-background text-foreground">
+      {showModal && <QuoteModal onClose={() => setShowModal(false)} />}
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
         <div className="block sm:hidden">
           <FusionStackLogo iconSize={36} />
@@ -25,7 +112,7 @@ function Landing() {
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <Button disabled>Get started</Button>
+          <Button onClick={() => setShowModal(true)}>Get started</Button>
         </div>
       </header>
       <main className="mx-auto max-w-6xl px-6 pt-16 pb-24">
@@ -41,8 +128,8 @@ function Landing() {
             Track leads, manage your pipeline, and turn proposals into projects — without the bloat.
           </p>
           <div className="mt-8 flex justify-center gap-3">
-            <Button size="lg" disabled>
-              Coming Soon <ArrowRight className="ml-1.5 h-4 w-4" />
+            <Button size="lg" onClick={() => setShowModal(true)}>
+              Get a free quote <ArrowRight className="ml-1.5 h-4 w-4" />
             </Button>
           </div>
         </section>
