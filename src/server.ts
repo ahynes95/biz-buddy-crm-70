@@ -1,15 +1,16 @@
 import "./lib/error-capture";
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
- 
-const RESEND_API_KEY = "re_bDTkJTAz_FNUHrXJtieJqVQQWUb5kfQN5";
+
 const FROM = "info@fusionstack.net";
 const NOTIFY_EMAILS = ["chrismikeg22@gmail.com", "austinmh95@gmail.com"];
- 
+
+type Env = { RESEND_API_KEY?: string };
+
 type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
 };
- 
+
 let serverEntryPromise: Promise<ServerEntry> | undefined;
 async function getServerEntry(): Promise<ServerEntry> {
   if (!serverEntryPromise) {
@@ -19,14 +20,14 @@ async function getServerEntry(): Promise<ServerEntry> {
   }
   return serverEntryPromise;
 }
- 
+
 function brandedErrorResponse(): Response {
   return new Response(renderErrorPage(), {
     status: 500,
     headers: { "content-type": "text/html; charset=utf-8" },
   });
 }
- 
+
 function isCatastrophicSsrErrorBody(body: string, responseStatus: number): boolean {
   let payload: unknown;
   try {
@@ -48,7 +49,7 @@ function isCatastrophicSsrErrorBody(body: string, responseStatus: number): boole
     (fields.status === undefined || fields.status === responseStatus)
   );
 }
- 
+
 async function normalizeCatastrophicSsrResponse(response: Response): Promise<Response> {
   if (response.status < 500) return response;
   const contentType = response.headers.get("content-type") ?? "";
@@ -60,22 +61,22 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
   console.error(consumeLastCapturedError() ?? new Error(`h3 swallowed SSR error: ${body}`));
   return brandedErrorResponse();
 }
- 
-async function handleQuote(request: Request): Promise<Response> {
+
+async function handleQuote(request: Request, apiKey: string): Promise<Response> {
   try {
     const { name, email, business, need } = await request.json() as Record<string, string>;
- 
+
     if (!name || !email || !business || !need) {
       return new Response(JSON.stringify({ error: "Missing fields" }), {
         status: 400,
         headers: { "content-type": "application/json" },
       });
     }
- 
+
     await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${RESEND_API_KEY}`,
+        "Authorization": `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -91,11 +92,11 @@ async function handleQuote(request: Request): Promise<Response> {
         `,
       }),
     });
- 
+
     await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${RESEND_API_KEY}`,
+        "Authorization": `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -111,7 +112,7 @@ async function handleQuote(request: Request): Promise<Response> {
         `,
       }),
     });
- 
+
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers: { "content-type": "application/json" },
@@ -124,15 +125,16 @@ async function handleQuote(request: Request): Promise<Response> {
     });
   }
 }
- 
+
 export default {
-  async fetch(request: Request, env: unknown, ctx: unknown) {
+  async fetch(request: Request, env: Env, ctx: unknown) {
     const url = new URL(request.url);
- 
+
     if (url.pathname === "/api/quote" && request.method === "POST") {
-      return handleQuote(request);
+      const apiKey = env.RESEND_API_KEY ?? "";
+      return handleQuote(request, apiKey);
     }
- 
+
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
