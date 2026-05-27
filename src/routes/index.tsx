@@ -17,7 +17,12 @@ function Landing() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-        <FusionStackLogo iconSize={98} />
+        <div className="block sm:hidden">
+          <FusionStackLogo iconSize={36} />
+        </div>
+        <div className="hidden sm:block">
+          <FusionStackLogo iconSize={98} />
+        </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <Button disabled>Get started</Button>
@@ -29,10 +34,10 @@ function Landing() {
             <span className="h-1.5 w-1.5 rounded-full bg-primary" />
             Built for digital agencies
           </div>
-          <h1 className="text-5xl font-semibold tracking-tight sm:text-6xl">
+          <h1 className="text-4xl font-semibold tracking-tight sm:text-6xl">
             The CRM that fits the way agencies actually work.
           </h1>
-          <p className="mx-auto mt-6 max-w-xl text-lg text-muted-foreground">
+          <p className="mx-auto mt-6 max-w-xl text-base sm:text-lg text-muted-foreground">
             Track leads, manage your pipeline, and turn proposals into projects — without the bloat.
           </p>
           <div className="mt-8 flex justify-center gap-3">
