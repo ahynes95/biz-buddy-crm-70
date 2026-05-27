@@ -62,7 +62,49 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
   return brandedErrorResponse();
 }
 
-async function handleQuote(request: Request, apiKey: string): Promise<Response> {
+async function sendEmails(name: string, email: string, business: string, need: string, apiKey: string): Promise<void> {
+  await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: FROM,
+      to: NOTIFY_EMAILS,
+      subject: `New quote request from ${name} — ${business}`,
+      html: `
+        <h2>New Quote Request</h2>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Business:</strong> ${business}</p>
+        <p><strong>Need:</strong> ${need}</p>
+      `,
+    }),
+  });
+
+  await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: FROM,
+      to: [email],
+      subject: "We received your request — FusionStack",
+      html: `
+        <h2>Thanks, ${name}!</h2>
+        <p>We've received your request for a <strong>${need}</strong> and will get back to you within 24 hours.</p>
+        <p>In the meantime, feel free to reply to this email with any questions.</p>
+        <br/>
+        <p>— The FusionStack Team</p>
+      `,
+    }),
+  });
+}
+
+async function handleQuote(request: Request, env: Env, ctx: { waitUntil: (p: Promise<unknown>) => void }): Promise<Response> {
   try {
     const { name, email, business, need } = await request.json() as Record<string, string>;
 
@@ -73,45 +115,8 @@ async function handleQuote(request: Request, apiKey: string): Promise<Response> 
       });
     }
 
-    await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: FROM,
-        to: NOTIFY_EMAILS,
-        subject: `New quote request from ${name} — ${business}`,
-        html: `
-          <h2>New Quote Request</h2>
-          <p><strong>Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Business:</strong> ${business}</p>
-          <p><strong>Need:</strong> ${need}</p>
-        `,
-      }),
-    });
-
-    await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: FROM,
-        to: [email],
-        subject: "We received your request — FusionStack",
-        html: `
-          <h2>Thanks, ${name}!</h2>
-          <p>We've received your request for a <strong>${need}</strong> and will get back to you within 24 hours.</p>
-          <p>In the meantime, feel free to reply to this email with any questions.</p>
-          <br/>
-          <p>— The FusionStack Team</p>
-        `,
-      }),
-    });
+    const apiKey = env.RESEND_API_KEY ?? "re_bDTkJTAz_FNUHrXJtieJqVQQWUb5kfQN5";
+    ctx.waitUntil(sendEmails(name, email, business, need, apiKey));
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
@@ -127,12 +132,11 @@ async function handleQuote(request: Request, apiKey: string): Promise<Response> 
 }
 
 export default {
-  async fetch(request: Request, env: Env, ctx: unknown) {
+  async fetch(request: Request, env: Env, ctx: { waitUntil: (p: Promise<unknown>) => void }) {
     const url = new URL(request.url);
 
     if (url.pathname === "/api/quote" && request.method === "POST") {
-      const apiKey = env.RESEND_API_KEY ?? "re_bDTkJTAz_FNUHrXJtieJqVQQWUb5kfQN5";
-      return handleQuote(request, apiKey);
+      return handleQuote(request, env, ctx);
     }
 
     try {
