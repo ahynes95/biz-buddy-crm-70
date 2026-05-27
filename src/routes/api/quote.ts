@@ -1,23 +1,24 @@
-import { json } from "@tanstack/react-start/server";
-import { createAPIFileRoute } from "@tanstack/react-start/api";
+import { createServerFn } from "@tanstack/react-start";
 
 const RESEND_API_KEY = "re_bDTkJTAz_FNUHrXJtieJqVQQWUb5kfQN5";
 const FROM = "info@fusionstack.net";
 const NOTIFY_EMAILS = ["chrismikeg22@gmail.com", "austinmh95@gmail.com"];
 
-export const Route = createAPIFileRoute("/api/quote")({
-  POST: async ({ request }) => {
-    const { name, email, business, need } = await request.json();
+type QuoteData = { name: string; email: string; business: string; need: string };
+
+export const submitQuote = createServerFn({ method: "POST" })
+  .validator((data: unknown) => data as QuoteData)
+  .handler(async ({ data }) => {
+    const { name, email, business, need } = data;
 
     if (!name || !email || !business || !need) {
-      return json({ error: "Missing fields" }, { status: 400 });
+      throw new Error("Missing fields");
     }
 
-    // Send notification to team
     await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${RESEND_API_KEY}`,
+        Authorization: `Bearer ${RESEND_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -34,11 +35,10 @@ export const Route = createAPIFileRoute("/api/quote")({
       }),
     });
 
-    // Send confirmation to customer
     await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${RESEND_API_KEY}`,
+        Authorization: `Bearer ${RESEND_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -55,6 +55,5 @@ export const Route = createAPIFileRoute("/api/quote")({
       }),
     });
 
-    return json({ success: true });
-  },
-});
+    return { success: true };
+  });
