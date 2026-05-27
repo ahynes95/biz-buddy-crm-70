@@ -2,10 +2,9 @@ import "./lib/error-capture";
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
 
+const RESEND_API_KEY = "re_bDTkJTAz_FNUHrXJtieJqVQQWUb5kfQN5";
 const FROM = "info@fusionstack.net";
 const NOTIFY_EMAILS = ["chrismikeg22@gmail.com", "austinmh95@gmail.com"];
-
-type Env = { RESEND_API_KEY?: string };
 
 type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
@@ -62,59 +61,9 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
   return brandedErrorResponse();
 }
 
-async function sendEmails(name: string, email: string, business: string, need: string, apiKey: string): Promise<void> {
-  console.log("sendEmails called, apiKey present:", !!apiKey);
-
-  const r1 = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: FROM,
-      to: NOTIFY_EMAILS,
-      subject: `New quote request from ${name} — ${business}`,
-      html: `
-        <h2>New Quote Request</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Business:</strong> ${business}</p>
-        <p><strong>Need:</strong> ${need}</p>
-      `,
-    }),
-  });
-  const t1 = await r1.text();
-  console.log("Notification email result:", r1.status, t1);
-
-  const r2 = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: FROM,
-      to: [email],
-      subject: "We received your request — FusionStack",
-      html: `
-        <h2>Thanks, ${name}!</h2>
-        <p>We've received your request for a <strong>${need}</strong> and will get back to you within 24 hours.</p>
-        <p>In the meantime, feel free to reply to this email with any questions.</p>
-        <br/>
-        <p>— The FusionStack Team</p>
-      `,
-    }),
-  });
-  const t2 = await r2.text();
-  console.log("Confirmation email result:", r2.status, t2);
-}
-
-async function handleQuote(request: Request, env: Env, ctx: { waitUntil: (p: Promise<unknown>) => void }): Promise<Response> {
+async function handleQuote(request: Request): Promise<Response> {
   try {
-    const body = await request.json() as Record<string, string>;
-    console.log("handleQuote called with:", JSON.stringify(body));
-    const { name, email, business, need } = body;
+    const { name, email, business, need } = await request.json() as Record<string, string>;
 
     if (!name || !email || !business || !need) {
       return new Response(JSON.stringify({ error: "Missing fields" }), {
@@ -123,16 +72,52 @@ async function handleQuote(request: Request, env: Env, ctx: { waitUntil: (p: Pro
       });
     }
 
-    const apiKey = env.RESEND_API_KEY ?? "re_bDTkJTAz_FNUHrXJtieJqVQQWUb5kfQN5";
-    console.log("API key present:", !!apiKey, "length:", apiKey.length);
-    ctx.waitUntil(sendEmails(name, email, business, need, apiKey));
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${RESEND_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: FROM,
+        to: NOTIFY_EMAILS,
+        subject: `New quote request from ${name} — ${business}`,
+        html: `
+          <h2>New Quote Request</h2>
+          <p><strong>Name:</strong> ${name}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Business:</strong> ${business}</p>
+          <p><strong>Need:</strong> ${need}</p>
+        `,
+      }),
+    });
+
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${RESEND_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: FROM,
+        to: [email],
+        subject: "We received your request — FusionStack",
+        html: `
+          <h2>Thanks, ${name}!</h2>
+          <p>We've received your request for a <strong>${need}</strong> and will get back to you within 24 hours.</p>
+          <p>In the meantime, feel free to reply to this email with any questions.</p>
+          <br/>
+          <p>— The FusionStack Team</p>
+        `,
+      }),
+    });
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers: { "content-type": "application/json" },
     });
   } catch (err) {
-    console.error("handleQuote error:", err);
+    console.error(err);
     return new Response(JSON.stringify({ error: "Internal error" }), {
       status: 500,
       headers: { "content-type": "application/json" },
@@ -141,13 +126,11 @@ async function handleQuote(request: Request, env: Env, ctx: { waitUntil: (p: Pro
 }
 
 export default {
-  async fetch(request: Request, env: Env, ctx: { waitUntil: (p: Promise<unknown>) => void }) {
+  async fetch(request: Request, env: unknown, ctx: unknown) {
     const url = new URL(request.url);
-    console.log("Request:", request.method, url.pathname);
 
     if (url.pathname === "/api/quote" && request.method === "POST") {
-      console.log("Routing to handleQuote");
-      return handleQuote(request, env, ctx);
+      return handleQuote(request);
     }
 
     try {
