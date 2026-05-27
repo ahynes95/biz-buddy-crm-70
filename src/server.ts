@@ -1,5 +1,4 @@
-// @ts-ignore
-const getServerEntry = () => import("virtual:react-server-entry").then(m => m.getServerEntry?.() ?? m.default);
+import { getServerEntry } from "virtual:react-server-entry";
 
 const RESEND_API_KEY = "re_bDTkJTAz_FNUHrXJtieJqVQQWUb5kfQN5";
 const FROM = "info@fusionstack.net";
