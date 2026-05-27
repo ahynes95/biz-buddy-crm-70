@@ -15,6 +15,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app/index'
+import { Route as AuthenticatedAppLeadsRouteImport } from './routes/_authenticated/app/leads'
 import { Route as AuthenticatedAppDealsRouteImport } from './routes/_authenticated/app/deals'
 import { Route as AuthenticatedAppContactsRouteImport } from './routes/_authenticated/app/contacts'
 import { Route as AuthenticatedAppCompaniesRouteImport } from './routes/_authenticated/app/companies'
@@ -48,6 +49,11 @@ const AuthenticatedAppIndexRoute = AuthenticatedAppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppLeadsRoute = AuthenticatedAppLeadsRouteImport.update({
+  id: '/leads',
+  path: '/leads',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
 const AuthenticatedAppDealsRoute = AuthenticatedAppDealsRouteImport.update({
   id: '/deals',
   path: '/deals',
@@ -74,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/app/companies': typeof AuthenticatedAppCompaniesRoute
   '/app/contacts': typeof AuthenticatedAppContactsRoute
   '/app/deals': typeof AuthenticatedAppDealsRoute
+  '/app/leads': typeof AuthenticatedAppLeadsRoute
   '/app/': typeof AuthenticatedAppIndexRoute
 }
 export interface FileRoutesByTo {
@@ -83,6 +90,7 @@ export interface FileRoutesByTo {
   '/app/companies': typeof AuthenticatedAppCompaniesRoute
   '/app/contacts': typeof AuthenticatedAppContactsRoute
   '/app/deals': typeof AuthenticatedAppDealsRoute
+  '/app/leads': typeof AuthenticatedAppLeadsRoute
   '/app': typeof AuthenticatedAppIndexRoute
 }
 export interface FileRoutesById {
@@ -95,6 +103,7 @@ export interface FileRoutesById {
   '/_authenticated/app/companies': typeof AuthenticatedAppCompaniesRoute
   '/_authenticated/app/contacts': typeof AuthenticatedAppContactsRoute
   '/_authenticated/app/deals': typeof AuthenticatedAppDealsRoute
+  '/_authenticated/app/leads': typeof AuthenticatedAppLeadsRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
 }
 export interface FileRouteTypes {
@@ -107,6 +116,7 @@ export interface FileRouteTypes {
     | '/app/companies'
     | '/app/contacts'
     | '/app/deals'
+    | '/app/leads'
     | '/app/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/app/companies'
     | '/app/contacts'
     | '/app/deals'
+    | '/app/leads'
     | '/app'
   id:
     | '__root__'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/companies'
     | '/_authenticated/app/contacts'
     | '/_authenticated/app/deals'
+    | '/_authenticated/app/leads'
     | '/_authenticated/app/'
   fileRoutesById: FileRoutesById
 }
@@ -181,6 +193,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppIndexRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/leads': {
+      id: '/_authenticated/app/leads'
+      path: '/leads'
+      fullPath: '/app/leads'
+      preLoaderRoute: typeof AuthenticatedAppLeadsRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/deals': {
       id: '/_authenticated/app/deals'
       path: '/deals'
@@ -209,6 +228,7 @@ interface AuthenticatedAppRouteChildren {
   AuthenticatedAppCompaniesRoute: typeof AuthenticatedAppCompaniesRoute
   AuthenticatedAppContactsRoute: typeof AuthenticatedAppContactsRoute
   AuthenticatedAppDealsRoute: typeof AuthenticatedAppDealsRoute
+  AuthenticatedAppLeadsRoute: typeof AuthenticatedAppLeadsRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
 }
 
@@ -216,6 +236,7 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppCompaniesRoute: AuthenticatedAppCompaniesRoute,
   AuthenticatedAppContactsRoute: AuthenticatedAppContactsRoute,
   AuthenticatedAppDealsRoute: AuthenticatedAppDealsRoute,
+  AuthenticatedAppLeadsRoute: AuthenticatedAppLeadsRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
 }
 

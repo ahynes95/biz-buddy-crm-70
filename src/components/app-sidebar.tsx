@@ -1,5 +1,5 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { LayoutDashboard, Users, Building2, Briefcase, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, Building2, Briefcase, LogOut, Inbox } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
@@ -10,6 +10,7 @@ import { FusionStackLogo, FusionStackIcon } from "@/components/FusionStackLogo";
 
 const items = [
   { title: "Dashboard", url: "/app", icon: LayoutDashboard, exact: true },
+  { title: "Leads", url: "/app/leads", icon: Inbox },
   { title: "Contacts", url: "/app/contacts", icon: Users },
   { title: "Companies", url: "/app/companies", icon: Building2 },
   { title: "Deals", url: "/app/deals", icon: Briefcase },
