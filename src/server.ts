@@ -1,56 +1,24 @@
-import "./lib/error-capture";
-import { consumeLastCapturedError } from "./lib/error-capture";
-import { renderErrorPage } from "./lib/error-page";
+import { getServerEntry } from "virtual:react-server-entry";
 
 const RESEND_API_KEY = "re_bDTkJTAz_FNUHrXJtieJqVQQWUb5kfQN5";
 const FROM = "info@fusionstack.net";
 const NOTIFY_EMAILS = ["chrismikeg22@gmail.com", "austinmh95@gmail.com"];
+const SUPABASE_URL = "https://hdempuicehrxbjwlddpk.supabase.co";
+const SUPABASE_SERVICE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhkZW1wdWljZWhyeGJqd2xkZHBrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3OTU5MjQ2MSwiZXhwIjoyMDk1MTY4NDYxfQ.zj_0jXelk7Jl773ge5_h6QVq1QbMb7Zl2C81GwnSjJg";
 
-type ServerEntry = {
-  fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
-};
-
-let serverEntryPromise: Promise<ServerEntry> | undefined;
-async function getServerEntry(): Promise<ServerEntry> {
-  if (!serverEntryPromise) {
-    serverEntryPromise = import("@tanstack/react-start/server-entry").then(
-      (m) => ((m as { default?: ServerEntry }).default ?? (m as unknown as ServerEntry)),
-    );
-  }
-  return serverEntryPromise;
+function isCatastrophicSsrErrorBody(body: string, status: number) {
+  return status === 500 && body.includes("__VITE_ERROR__");
 }
 
-function brandedErrorResponse(): Response {
-  return new Response(renderErrorPage(), {
-    status: 500,
-    headers: { "content-type": "text/html; charset=utf-8" },
-  });
+function brandedErrorResponse() {
+  return new Response("Internal Server Error", { status: 500 });
 }
 
-function isCatastrophicSsrErrorBody(body: string, responseStatus: number): boolean {
-  let payload: unknown;
-  try {
-    payload = JSON.parse(body);
-  } catch {
-    return false;
-  }
-  if (!payload || Array.isArray(payload) || typeof payload !== "object") {
-    return false;
-  }
-  const fields = payload as Record<string, unknown>;
-  const expectedKeys = new Set(["message", "status", "unhandled"]);
-  if (!Object.keys(fields).every((key) => expectedKeys.has(key))) {
-    return false;
-  }
-  return (
-    fields.unhandled === true &&
-    fields.message === "HTTPError" &&
-    (fields.status === undefined || fields.status === responseStatus)
-  );
+function consumeLastCapturedError() {
+  return null;
 }
 
 async function normalizeCatastrophicSsrResponse(response: Response): Promise<Response> {
-  if (response.status < 500) return response;
   const contentType = response.headers.get("content-type") ?? "";
   if (!contentType.includes("application/json")) return response;
   const body = await response.clone().text();
@@ -72,6 +40,19 @@ async function handleQuote(request: Request): Promise<Response> {
       });
     }
 
+    // Insert lead into Supabase CRM
+    await fetch(`${SUPABASE_URL}/rest/v1/leads`, {
+      method: "POST",
+      headers: {
+        "apikey": SUPABASE_SERVICE_KEY,
+        "Authorization": `Bearer ${SUPABASE_SERVICE_KEY}`,
+        "Content-Type": "application/json",
+        "Prefer": "return=minimal",
+      },
+      body: JSON.stringify({ name, email, business, need, status: "new" }),
+    });
+
+    // Send notification to team
     await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -92,6 +73,7 @@ async function handleQuote(request: Request): Promise<Response> {
       }),
     });
 
+    // Send confirmation to customer
     await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
