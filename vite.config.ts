@@ -12,4 +12,15 @@ export default defineConfig({
   tanstackStart: {
     server: { entry: "server" },
   },
+  vite: {
+    environments: {
+      ssr: {
+        build: {
+          rollupOptions: {
+            external: ["virtual:react-server-entry"],
+          },
+        },
+      },
+    },
+  },
 });
