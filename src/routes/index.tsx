@@ -17,7 +17,7 @@ function Landing() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-        <FusionStackLogo iconSize={48} />
+        <FusionStackLogo iconSize={98} />
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <Button disabled>Get started</Button>
