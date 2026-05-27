@@ -31,10 +31,10 @@ export function AppSidebar() {
       <SidebarHeader>
         <Link to="/app" className="flex items-center px-2 py-2">
           <div className="group-data-[collapsible=icon]:hidden">
-            <FusionStackLogo iconSize={86} />
+            <FusionStackLogo iconSize={50} />
           </div>
           <div className="hidden group-data-[collapsible=icon]:block">
-            <FusionStackIcon size={78} />
+            <FusionStackIcon size={40} />
           </div>
         </Link>
       </SidebarHeader>
