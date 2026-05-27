@@ -63,7 +63,9 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
 }
 
 async function sendEmails(name: string, email: string, business: string, need: string, apiKey: string): Promise<void> {
-  await fetch("https://api.resend.com/emails", {
+  console.log("sendEmails called, apiKey present:", !!apiKey);
+
+  const r1 = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${apiKey}`,
@@ -82,8 +84,10 @@ async function sendEmails(name: string, email: string, business: string, need: s
       `,
     }),
   });
+  const t1 = await r1.text();
+  console.log("Notification email result:", r1.status, t1);
 
-  await fetch("https://api.resend.com/emails", {
+  const r2 = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${apiKey}`,
@@ -102,11 +106,15 @@ async function sendEmails(name: string, email: string, business: string, need: s
       `,
     }),
   });
+  const t2 = await r2.text();
+  console.log("Confirmation email result:", r2.status, t2);
 }
 
 async function handleQuote(request: Request, env: Env, ctx: { waitUntil: (p: Promise<unknown>) => void }): Promise<Response> {
   try {
-    const { name, email, business, need } = await request.json() as Record<string, string>;
+    const body = await request.json() as Record<string, string>;
+    console.log("handleQuote called with:", JSON.stringify(body));
+    const { name, email, business, need } = body;
 
     if (!name || !email || !business || !need) {
       return new Response(JSON.stringify({ error: "Missing fields" }), {
@@ -116,6 +124,7 @@ async function handleQuote(request: Request, env: Env, ctx: { waitUntil: (p: Pro
     }
 
     const apiKey = env.RESEND_API_KEY ?? "re_bDTkJTAz_FNUHrXJtieJqVQQWUb5kfQN5";
+    console.log("API key present:", !!apiKey, "length:", apiKey.length);
     ctx.waitUntil(sendEmails(name, email, business, need, apiKey));
 
     return new Response(JSON.stringify({ success: true }), {
@@ -123,7 +132,7 @@ async function handleQuote(request: Request, env: Env, ctx: { waitUntil: (p: Pro
       headers: { "content-type": "application/json" },
     });
   } catch (err) {
-    console.error(err);
+    console.error("handleQuote error:", err);
     return new Response(JSON.stringify({ error: "Internal error" }), {
       status: 500,
       headers: { "content-type": "application/json" },
@@ -134,8 +143,10 @@ async function handleQuote(request: Request, env: Env, ctx: { waitUntil: (p: Pro
 export default {
   async fetch(request: Request, env: Env, ctx: { waitUntil: (p: Promise<unknown>) => void }) {
     const url = new URL(request.url);
+    console.log("Request:", request.method, url.pathname);
 
     if (url.pathname === "/api/quote" && request.method === "POST") {
+      console.log("Routing to handleQuote");
       return handleQuote(request, env, ctx);
     }
 
