@@ -5,7 +5,7 @@ const RESEND_API_KEY = "re_bDTkJTAz_FNUHrXJtieJqVQQWUb5kfQN5";
 const FROM = "info@fusionstack.net";
 const NOTIFY_EMAILS = ["chrismikeg22@gmail.com", "austinmh95@gmail.com"];
 
-export const APIRoute = createAPIFileRoute("/api/quote")({
+export const Route = createAPIFileRoute("/api/quote")({
   POST: async ({ request }) => {
     const { name, email, business, need } = await request.json();
 
