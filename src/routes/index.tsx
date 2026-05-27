@@ -8,7 +8,6 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuth } from "@/hooks/use-auth";
 import { FusionStackLogo } from "@/components/FusionStackLogo";
 import { toast } from "sonner";
-import { submitQuote } from "./api/quote";
 
 export const Route = createFileRoute("/")({ component: Landing });
 
@@ -21,7 +20,12 @@ function QuoteModal({ onClose }: { onClose: () => void }) {
     e.preventDefault();
     setLoading(true);
     try {
-      await submitQuote({ data: form });
+      const res = await fetch("/api/quote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) throw new Error("Failed");
       setSubmitted(true);
     } catch {
       toast.error("Something went wrong. Please try again.");
