@@ -5,12 +5,16 @@ export function FusionStackLogo({ iconSize = 98 }: { iconSize?: number }) {
   const subSize = Math.max(10, Math.round(iconSize * 0.13));
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-      <img src={ICON} alt="FusionStack" style={{ height: iconSize, width: "auto" }} />
-      <div style={{ lineHeight: 1.2 }}>
-        <div style={{ fontSize: textSize, fontWeight: 900, letterSpacing: "-0.5px" }} className="text-foreground">
+      <img
+        src={ICON}
+        alt="FusionStack"
+        style={{ height: iconSize, width: iconSize, objectFit: "contain", display: "block" }}
+      />
+      <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+        <div style={{ fontSize: textSize, fontWeight: 900, letterSpacing: "-0.5px", lineHeight: 1.1 }} className="text-foreground">
           FusionStack
         </div>
-        <div style={{ fontSize: subSize, letterSpacing: "0.5px", fontFamily: "monospace" }} className="text-primary">
+        <div style={{ fontSize: subSize, letterSpacing: "0.5px", fontFamily: "monospace", lineHeight: 1.4 }} className="text-primary">
           a web builder company
         </div>
       </div>
@@ -19,5 +23,5 @@ export function FusionStackLogo({ iconSize = 98 }: { iconSize?: number }) {
 }
 
 export function FusionStackIcon({ size = 32 }: { size?: number }) {
-  return <img src={ICON} alt="FusionStack" style={{ height: size, width: "auto" }} />;
+  return <img src={ICON} alt="FusionStack" style={{ height: size, width: size, objectFit: "contain", display: "block" }} />;
 }
