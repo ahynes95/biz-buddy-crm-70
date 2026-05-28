@@ -108,7 +108,7 @@ function Landing() {
           <FusionStackLogo iconSize={36} />
         </div>
         <div className="hidden sm:block">
-          <FusionStackLogo iconSize={98} />
+          <FusionStackLogo iconSize={140} />
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />
