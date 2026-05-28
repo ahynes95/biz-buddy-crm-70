@@ -1,10 +1,10 @@
 const ICON = "https://hdempuicehrxbjwlddpk.supabase.co/storage/v1/object/public/assets/FinalFusionStack.png.%20trans.png";
 
-export function FusionStackLogo({ iconSize = 48 }: { iconSize?: number }) {
-  const textSize = Math.max(12, Math.round(iconSize * 0.28));
-  const subSize = Math.max(9, Math.round(iconSize * 0.13));
+export function FusionStackLogo({ iconSize = 98 }: { iconSize?: number }) {
+  const textSize = Math.max(14, Math.round(iconSize * 0.28));
+  const subSize = Math.max(10, Math.round(iconSize * 0.13));
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
       <img src={ICON} alt="FusionStack" style={{ height: iconSize, width: "auto" }} />
       <div style={{ lineHeight: 1.2 }}>
         <div style={{ fontSize: textSize, fontWeight: 900, letterSpacing: "-0.5px" }} className="text-foreground">
