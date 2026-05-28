@@ -1,4 +1,4 @@
-const ICON = "https://hdempuicehrxbjwlddpk.supabase.co/storage/v1/object/public/assets/FinalFusionStack.png.%20trans.png";
+const ICON = "https://hdempuicehrxbjwlddpk.supabase.co/storage/v1/object/public/assets/FusionStack.%20trans.png(1).png";
 
 export function FusionStackLogo({ iconSize = 98 }: { iconSize?: number }) {
   const textSize = Math.max(14, Math.round(iconSize * 0.28));
