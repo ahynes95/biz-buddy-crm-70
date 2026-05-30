@@ -94,9 +94,9 @@ function QuoteModal({ onClose }: { onClose: () => void }) {
 // ── Showcase items — swap in your real GIFs here ──────────────────────────────
 const SHOWCASE_ITEMS = [
   {
-    title: "Local Service Business",
-    desc: "Clean, conversion-focused site for a plumbing company.",
-    gif: "", // e.g. "/gifs/plumber.gif"
+    title: "Interior Design Studio",
+    desc: "Elegant portfolio and booking site for a luxury design firm.",
+    gif: "https://hdempuicehrxbjwlddpk.supabase.co/storage/v1/object/public/assets/landergif2.gif",
   },
   {
     title: "Restaurant & Menu",
