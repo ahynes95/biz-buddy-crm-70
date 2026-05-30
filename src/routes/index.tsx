@@ -91,6 +91,64 @@ function QuoteModal({ onClose }: { onClose: () => void }) {
   );
 }
 
+// ── Showcase items — swap in your real GIFs here ──────────────────────────────
+const SHOWCASE_ITEMS = [
+  {
+    title: "Local Service Business",
+    desc: "Clean, conversion-focused site for a plumbing company.",
+    gif: "", // e.g. "/gifs/plumber.gif"
+  },
+  {
+    title: "Restaurant & Menu",
+    desc: "Mobile-first dining experience with online ordering.",
+    gif: "",
+  },
+  {
+    title: "Real Estate Agency",
+    desc: "Property listings with map search and lead capture.",
+    gif: "",
+  },
+  {
+    title: "Fitness Studio",
+    desc: "Class scheduling, memberships, and trainer bios.",
+    gif: "",
+  },
+  {
+    title: "E-commerce Store",
+    desc: "Full product catalog with cart and checkout flow.",
+    gif: "",
+  },
+  {
+    title: "Professional Services",
+    desc: "Law firm site with appointment booking integration.",
+    gif: "",
+  },
+];
+
+function ShowcaseCard({ title, desc, gif }: { title: string; desc: string; gif: string }) {
+  return (
+    <div className="group relative overflow-hidden rounded-xl border bg-card transition-transform duration-200 hover:-translate-y-1">
+      <div className="aspect-video w-full overflow-hidden bg-accent">
+        {gif ? (
+          <img
+            src={gif}
+            alt={title}
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
+            GIF coming soon
+          </div>
+        )}
+      </div>
+      <div className="p-4">
+        <h3 className="font-medium text-sm">{title}</h3>
+        <p className="mt-1 text-xs text-muted-foreground">{desc}</p>
+      </div>
+    </div>
+  );
+}
+
 function Landing() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
@@ -133,6 +191,7 @@ function Landing() {
             </Button>
           </div>
         </section>
+
         <section className="mt-24 grid gap-6 sm:grid-cols-3">
           {[
             { icon: Users, title: "Contacts & Companies", desc: "Centralize every client, prospect, and partner." },
@@ -147,6 +206,26 @@ function Landing() {
               <p className="mt-1.5 text-sm text-muted-foreground">{f.desc}</p>
             </div>
           ))}
+        </section>
+
+        {/* ── Showcase section ───────────────────────────────────────────── */}
+        <section className="mt-32">
+          <div className="mb-12 text-center">
+            <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">See what we've built</h2>
+            <p className="mx-auto mt-4 max-w-xl text-base text-muted-foreground">
+              Real sites we've designed and shipped for clients across industries.
+            </p>
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {SHOWCASE_ITEMS.map((item) => (
+              <ShowcaseCard key={item.title} {...item} />
+            ))}
+          </div>
+          <div className="mt-12 text-center">
+            <Button size="lg" onClick={() => setShowModal(true)}>
+              Get your site built <ArrowRight className="ml-1.5 h-4 w-4" />
+            </Button>
+          </div>
         </section>
       </main>
     </div>
