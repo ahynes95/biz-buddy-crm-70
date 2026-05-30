@@ -99,9 +99,9 @@ const SHOWCASE_ITEMS = [
     gif: "https://hdempuicehrxbjwlddpk.supabase.co/storage/v1/object/public/assets/landergif2.gif",
   },
   {
-    title: "Restaurant & Menu",
-    desc: "Mobile-first dining experience with online ordering.",
-    gif: "",
+    title: "Cleaning Services",
+    desc: "Professional cleaning company site with instant quote and booking.",
+    gif: "https://hdempuicehrxbjwlddpk.supabase.co/storage/v1/object/public/assets/mauragif.gif",
   },
   {
     title: "Real Estate Agency",
